@@ -1,0 +1,23 @@
+## Transaction Recording
+
+{{ shop_name }} {{ grain_phrase }}.
+
+{{ multiple_payments_phrase }}. Each payment is recorded with its method and amount.
+
+{% if voids_enabled %}
+{{ voids_phrase }}. Void events reference the original transaction but are recorded as separate events with their own timestamps.
+{% else %}
+{{ voids_phrase }}.
+{% endif %}
+
+{% if manual_overrides %}
+Managers may apply manual price overrides that differ from both the listed price and any applicable promotions. Override amounts are recorded, but the original pre-override price context may not always be preserved.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

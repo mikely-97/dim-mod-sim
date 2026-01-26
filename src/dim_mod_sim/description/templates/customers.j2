@@ -1,0 +1,25 @@
+## Customers
+
+{% if customer_reliability == "absent" %}
+{{ customer_reliability_phrase }}. All transactions are effectively anonymous.
+{% else %}
+{{ customer_reliability_phrase }}.
+
+{% if anonymous_allowed %}
+Anonymous purchases are permitted. Not all transactions will have an associated customer ID.
+{% else %}
+All transactions require customer identification.
+{% endif %}
+
+{% if household_grouping %}
+Customers may be grouped into households. A household ID can link multiple customer IDs who are presumed to be related (family members, roommates, etc.).
+{% endif %}
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

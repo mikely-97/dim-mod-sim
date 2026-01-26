@@ -1,0 +1,33 @@
+## Stores and Channels
+
+{% if physical_stores and online_channel %}
+{{ shop_name }} operates both physical retail locations and an online store.
+{% elif physical_stores %}
+{{ shop_name }} operates physical retail locations only.
+{% else %}
+{{ shop_name }} operates exclusively online.
+{% endif %}
+
+{% if physical_stores %}
+Each physical store has its own identifier, registers, and staff.
+{% endif %}
+
+{% if cross_store_returns %}
+Returns can be processed at any store, regardless of where the original purchase was made.
+{% else %}
+{% if physical_stores %}
+Returns must be processed at the same store where the purchase was made.
+{% endif %}
+{% endif %}
+
+{% if store_lifecycle_changes %}
+Stores may open, close, or merge over time. Historical data will reflect stores that no longer exist, and store attributes may change.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

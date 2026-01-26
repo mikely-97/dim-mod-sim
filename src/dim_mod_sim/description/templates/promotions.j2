@@ -1,0 +1,28 @@
+## Promotions
+
+{% if promotions_per_line_item == "many" %}
+Multiple promotions can apply to a single line item.
+{% if stackable_promotions %}
+These promotions can stack, meaning their discounts are cumulative.
+{% else %}
+When multiple promotions apply, only one discount is actually used (the selection mechanism is not always transparent).
+{% endif %}
+{% else %}
+Each line item can have at most one promotion applied.
+{% endif %}
+
+{% if basket_level_promotions %}
+Some promotions apply at the basket level rather than to individual line items. These discounts are based on the overall transaction (e.g., "10% off orders over $100") rather than specific products.
+{% endif %}
+
+{% if post_transaction_promotions %}
+Promotions can be applied after a transaction has been completed. This may result in adjustment events that modify the effective price of historical transactions.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

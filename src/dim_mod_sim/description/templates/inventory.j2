@@ -1,0 +1,21 @@
+## Inventory
+
+{% if tracked %}
+Inventory is tracked in this system.
+
+{{ inventory_type_phrase }}.
+
+{% if inventory_type == "both" %}
+Both types of inventory data exist in the event stream: individual adjustment events and periodic snapshots. These represent the same underlying inventory but at different granularities.
+{% endif %}
+{% else %}
+Inventory is not tracked in this system. There are no inventory-related events.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

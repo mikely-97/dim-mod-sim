@@ -1,0 +1,19 @@
+## Time Semantics
+
+{{ timestamp_relation_phrase }}.
+
+{% if late_arriving_events %}
+{{ late_arriving_phrase }}. Data consumers should not assume that event order in the log matches true chronological order.
+{% endif %}
+
+{% if backdated_corrections %}
+{{ backdated_corrections_phrase }}. This means the `business_effective_date` of a correction event may be earlier than the event's `event_timestamp`.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}

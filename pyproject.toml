@@ -1,0 +1,34 @@
+[project]
+name = "dim-mod-sim"
+version = "0.1.0"
+description = "Dimensional modeling simulation framework for testing data engineering skills"
+authors = [
+    {name = "Mike", email = "sortia@protonmail.com"}
+]
+license = {text = "MIT"}
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.5.0",
+    "jinja2>=3.1.0",
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+dim-mod-sim = "dim_mod_sim.cli:app"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "hypothesis>=6.0.0",
+    "mypy>=1.8.0",
+    "ruff>=0.1.0",
+]
+
+[tool.poetry]
+packages = [{include = "dim_mod_sim", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

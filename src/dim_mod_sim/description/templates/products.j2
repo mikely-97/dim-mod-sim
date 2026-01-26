@@ -1,0 +1,25 @@
+## Products
+
+{% if sku_reuse %}
+{{ sku_reuse_phrase }}. This is an important consideration: historical analysis must account for the possibility that a SKU meant something different in the past.
+{% else %}
+{{ sku_reuse_phrase }}.
+{% endif %}
+
+{{ hierarchy_change_phrase }}.
+
+{% if bundled_products %}
+Some products are sold as bundles containing multiple component items. Bundle transactions may show the bundle SKU and/or its components depending on how the sale was recorded.
+{% endif %}
+
+{% if virtual_products %}
+The product catalog includes virtual products such as gift cards and services. These items do not affect physical inventory.
+{% endif %}
+
+{% if ambiguities %}
+### Notable Ambiguities
+
+{% for ambiguity in ambiguities %}
+- {{ ambiguity }}
+{% endfor %}
+{% endif %}
