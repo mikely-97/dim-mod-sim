@@ -1,0 +1,101 @@
+/* Dim-Mod-Sim Textual CSS */
+
+/* Base app styling */
+Screen {
+    align: center middle;
+}
+
+/* Home screen */
+HomeScreen {
+    layout: vertical;
+    align: center middle;
+}
+
+#home-container {
+    width: 60;
+    height: auto;
+    padding: 2 4;
+    border: round $primary;
+    background: $surface;
+}
+
+#app-title {
+    text-align: center;
+    text-style: bold;
+    color: $text;
+    padding-bottom: 1;
+}
+
+#app-subtitle {
+    text-align: center;
+    color: $text-muted;
+    padding-bottom: 2;
+}
+
+#button-container {
+    layout: vertical;
+    align: center middle;
+    height: auto;
+    padding-top: 1;
+}
+
+.home-button {
+    width: 100%;
+    margin: 1 0;
+}
+
+.home-button.-primary {
+    background: $primary;
+}
+
+/* Score display colors */
+.score-low {
+    color: $error;
+}
+
+.score-mid {
+    color: $warning;
+}
+
+.score-high {
+    color: $success;
+}
+
+/* Feedback panel */
+.violation-critical {
+    color: $error;
+    text-style: bold;
+}
+
+.violation-warning {
+    color: $warning;
+}
+
+.violation-info {
+    color: $primary;
+}
+
+/* Progress bars */
+ProgressBar > Bar {
+    color: $success;
+}
+
+ProgressBar.-low > Bar {
+    color: $error;
+}
+
+ProgressBar.-mid > Bar {
+    color: $warning;
+}
+
+/* General containers */
+.panel {
+    border: solid $primary-lighten-2;
+    padding: 1 2;
+    margin: 1;
+}
+
+.panel-title {
+    text-style: bold;
+    padding-bottom: 1;
+}

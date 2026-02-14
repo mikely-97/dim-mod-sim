@@ -1,6 +1,7 @@
 """Temporal correctness evaluation axis."""
 
 from dim_mod_sim.evaluator.axes.base import EvaluationAxis
+from dim_mod_sim.evaluator.feedback import ViolationType
 from dim_mod_sim.evaluator.result import AxisScore, Deduction, Severity
 from dim_mod_sim.schema.models import DimensionTable, SCDType, SchemaSubmission
 
@@ -53,6 +54,10 @@ class TemporalCorrectnessAxis(EvaluationAxis):
                     reason=f"Dimension '{dim.name}' has changing attributes but uses {dim.scd_strategy.value} (no history)",
                     severity=Severity.MAJOR,
                     affected_elements=[dim.name],
+                    violation_type=ViolationType.TEMPORAL_LIE,
+                    concrete_example=f"Attribute in {dim.name} changed in February; all January facts now show February values",
+                    consequence="Historical reports show current values, not point-in-time truth",
+                    fix_hint="Change to Type 2 SCD and mark changing attributes with scd_tracked: true",
                 ))
         else:
             # Check for unnecessary complexity
@@ -93,6 +98,10 @@ class TemporalCorrectnessAxis(EvaluationAxis):
                             reason=f"Historical queries on '{fact.name}' may be incorrect due to '{dim.name}' lacking history",
                             severity=Severity.MAJOR,
                             affected_elements=[fact.name, dim.name],
+                            violation_type=ViolationType.TEMPORAL_LIE,
+                            concrete_example=f"Query for 'sales by category in Q1' shows current categories, not Q1 categories",
+                            consequence="Time-series analysis and historical comparisons are unreliable",
+                            fix_hint=f"Add Type 2 SCD to {dim.name} to preserve point-in-time attribute values",
                         ))
 
         return deductions
@@ -147,6 +156,10 @@ class TemporalCorrectnessAxis(EvaluationAxis):
                     reason=f"Fact '{fact.name}' may not distinguish event time from business effective date",
                     severity=Severity.MODERATE,
                     affected_elements=[fact.name],
+                    violation_type=ViolationType.TEMPORAL_LIE,
+                    concrete_example="Correction recorded Jan 20 but effective Jan 15 - which date does the row show?",
+                    consequence="Cannot answer 'what were sales on Jan 15' vs 'what was recorded on Jan 15'",
+                    fix_hint="Add both event_timestamp and business_effective_date columns",
                 ))
 
         return deductions

@@ -1,6 +1,7 @@
 """Structural optimality evaluation axis."""
 
 from dim_mod_sim.evaluator.axes.base import EvaluationAxis
+from dim_mod_sim.evaluator.feedback import ViolationType
 from dim_mod_sim.evaluator.result import AxisScore, Deduction, Severity
 from dim_mod_sim.schema.models import SchemaSubmission
 
@@ -154,6 +155,10 @@ class StructuralOptimalityAxis(EvaluationAxis):
                 reason=f"Schema has {num_facts} fact tables; {expected_facts}-{expected_facts + 2} may be sufficient",
                 severity=Severity.MODERATE,
                 affected_elements=["fact_tables"],
+                violation_type=ViolationType.OVER_MODELING,
+                concrete_example=f"Created {num_facts} facts for a shop that needs {expected_facts}-{expected_facts + 2}",
+                consequence="Increased complexity, maintenance burden, and query confusion",
+                fix_hint="Review if some fact tables can be consolidated or removed",
             ))
 
         if num_dims > expected_dims * 2:

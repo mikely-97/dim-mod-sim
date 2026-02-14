@@ -1,6 +1,7 @@
 """Grain correctness evaluation axis."""
 
 from dim_mod_sim.evaluator.axes.base import EvaluationAxis
+from dim_mod_sim.evaluator.feedback import ViolationType
 from dim_mod_sim.evaluator.result import AxisScore, Deduction, Severity
 from dim_mod_sim.schema.models import SchemaSubmission
 
@@ -48,6 +49,10 @@ class GrainCorrectnessAxis(EvaluationAxis):
                 reason=f"Fact table '{fact.name}' has no or insufficient grain description",
                 severity=Severity.MODERATE,
                 affected_elements=[fact.name],
+                violation_type=ViolationType.GRAIN_VIOLATION,
+                concrete_example="Without a grain statement, it's unclear what one row represents",
+                consequence="Queries may aggregate incorrectly; team members will misuse the table",
+                fix_hint="Add a clear grain_description stating exactly what one row represents",
             ))
 
         return deductions
@@ -98,6 +103,10 @@ class GrainCorrectnessAxis(EvaluationAxis):
                         reason=f"Many-to-many relationship between '{fact.name}' and '{rel.dimension_table}' without bridge table",
                         severity=Severity.MAJOR,
                         affected_elements=[fact.name, rel.dimension_table],
+                        violation_type=ViolationType.FAN_OUT_RISK,
+                        concrete_example=f"One {fact.name} row joins to multiple {rel.dimension_table} rows, duplicating measures",
+                        consequence="SUM/COUNT queries inflate by the fan-out factor; all aggregations are wrong",
+                        fix_hint=f"Add a bridge table between {fact.name} and {rel.dimension_table}",
                     ))
 
         return deductions
@@ -117,6 +126,10 @@ class GrainCorrectnessAxis(EvaluationAxis):
                     reason=f"Fact '{fact.name}' grain description suggests mixed grain (contains '{indicator}')",
                     severity=Severity.CRITICAL,
                     affected_elements=[fact.name],
+                    violation_type=ViolationType.GRAIN_VIOLATION,
+                    concrete_example="TXN-001 has 3 line items; TXN-002 is receipt-level only - both in same table",
+                    consequence="SUM(quantity) double-counts or loses items; no reliable aggregation possible",
+                    fix_hint="Split into separate fact tables per grain, or add is_aggregated indicator column",
                 ))
                 break
 

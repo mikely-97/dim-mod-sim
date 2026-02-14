@@ -1,7 +1,13 @@
 """Evaluation result models."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dim_mod_sim.evaluator.feedback import ViolationType
 
 
 class Severity(str, Enum):
@@ -15,12 +21,17 @@ class Severity(str, Enum):
 
 @dataclass
 class Deduction:
-    """A scoring deduction with explanation."""
+    """A scoring deduction with explanation and actionable details."""
 
     points: int
     reason: str
     severity: Severity
     affected_elements: list[str] = field(default_factory=list)
+    # Extended fields for actionable feedback
+    violation_type: ViolationType | None = None
+    concrete_example: str | None = None
+    consequence: str | None = None
+    fix_hint: str | None = None
 
 
 @dataclass

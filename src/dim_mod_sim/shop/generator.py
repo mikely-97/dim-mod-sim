@@ -1,6 +1,13 @@
 """Shop configuration generator."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from dim_mod_sim.core.random import SeededRandom
+
+if TYPE_CHECKING:
+    from dim_mod_sim.play.framing import EnabledTrap
 from dim_mod_sim.shop.config import (
     CustomerConfig,
     InventoryConfig,
@@ -402,3 +409,174 @@ class ShopGenerator:
             tracked=tracked,
             inventory_type=inv_type,
         )
+
+
+def extract_enabled_traps(config: ShopConfiguration) -> list["EnabledTrap"]:
+    """Extract list of enabled modeling traps from a shop configuration.
+
+    This analyzes the configuration and identifies which traps are active
+    that could trip up a naive dimensional modeler.
+    """
+    from dim_mod_sim.play.framing import EnabledTrap, TrapCategory
+
+    traps: list[EnabledTrap] = []
+
+    # === GRAIN TRAPS ===
+    if config.transactions.grain == TransactionGrain.MIXED:
+        traps.append(EnabledTrap(
+            category=TrapCategory.GRAIN,
+            name="Mixed Transaction Grain",
+            threat_description="mixing line-item and receipt-level transactions unpredictably",
+            config_source="transactions.grain=mixed",
+        ))
+
+    if config.transactions.multiple_payments:
+        traps.append(EnabledTrap(
+            category=TrapCategory.GRAIN,
+            name="Multiple Payments",
+            threat_description="splitting payments across multiple tender types per transaction",
+            config_source="transactions.multiple_payments=true",
+        ))
+
+    if config.promotions.promotions_per_line_item == PromotionsPerLineItem.MANY:
+        traps.append(EnabledTrap(
+            category=TrapCategory.GRAIN,
+            name="Multiple Promotions Per Item",
+            threat_description="stacking multiple promotions on single line items",
+            config_source="promotions.promotions_per_line_item=many",
+        ))
+
+    # === TEMPORAL TRAPS ===
+    if config.time.timestamp_business_date_relation == TimestampBusinessDateRelation.DIFFERENT:
+        traps.append(EnabledTrap(
+            category=TrapCategory.TEMPORAL,
+            name="Timestamp/Business Date Divergence",
+            threat_description="recording events at midnight that belong to yesterday's business",
+            config_source="time.timestamp_business_date_relation=different",
+        ))
+
+    if config.time.backdated_corrections:
+        traps.append(EnabledTrap(
+            category=TrapCategory.TEMPORAL,
+            name="Backdated Corrections",
+            threat_description="recording corrections today that apply to last week's transactions",
+            config_source="time.backdated_corrections=true",
+        ))
+
+    if config.time.late_arriving_events:
+        traps.append(EnabledTrap(
+            category=TrapCategory.TEMPORAL,
+            name="Late-Arriving Events",
+            threat_description="processing events days after they actually occurred",
+            config_source="time.late_arriving_events=true",
+        ))
+
+    if config.products.hierarchy_change_frequency != ProductHierarchyChangeFrequency.NONE:
+        freq = config.products.hierarchy_change_frequency.value
+        traps.append(EnabledTrap(
+            category=TrapCategory.TEMPORAL,
+            name="Product Hierarchy Changes",
+            threat_description=f"reorganizing product categories {freq}",
+            config_source=f"products.hierarchy_change_frequency={freq}",
+        ))
+
+    # === IDENTITY TRAPS ===
+    if config.customers.customer_id_reliability == CustomerIdReliability.UNRELIABLE:
+        traps.append(EnabledTrap(
+            category=TrapCategory.IDENTITY,
+            name="Unreliable Customer IDs",
+            threat_description="giving you customer IDs that merge and split randomly",
+            config_source="customers.customer_id_reliability=unreliable",
+        ))
+
+    if config.customers.customer_id_reliability == CustomerIdReliability.ABSENT:
+        traps.append(EnabledTrap(
+            category=TrapCategory.IDENTITY,
+            name="No Customer IDs",
+            threat_description="having no customer identifiers at all",
+            config_source="customers.customer_id_reliability=absent",
+        ))
+
+    if config.products.sku_reuse:
+        traps.append(EnabledTrap(
+            category=TrapCategory.IDENTITY,
+            name="SKU Reuse",
+            threat_description="reusing SKU codes for completely different products over time",
+            config_source="products.sku_reuse=true",
+        ))
+
+    # === SEMANTIC TRAPS ===
+    if config.returns.reference_policy == ReturnsReferencePolicy.SOMETIMES:
+        traps.append(EnabledTrap(
+            category=TrapCategory.SEMANTIC,
+            name="Optional Return References",
+            threat_description="sometimes referencing original sales on returns, sometimes not",
+            config_source="returns.reference_policy=sometimes",
+        ))
+
+    if config.returns.reference_policy == ReturnsReferencePolicy.NEVER:
+        traps.append(EnabledTrap(
+            category=TrapCategory.SEMANTIC,
+            name="Orphan Returns",
+            threat_description="accepting returns with no link to original transactions",
+            config_source="returns.reference_policy=never",
+        ))
+
+    if config.returns.pricing_policy == ReturnsPricingPolicy.ARBITRARY_OVERRIDE:
+        traps.append(EnabledTrap(
+            category=TrapCategory.SEMANTIC,
+            name="Arbitrary Return Pricing",
+            threat_description="overriding return prices with values matching nothing in the system",
+            config_source="returns.pricing_policy=arbitrary_override",
+        ))
+
+    if config.transactions.voids_enabled:
+        traps.append(EnabledTrap(
+            category=TrapCategory.SEMANTIC,
+            name="Transaction Voids",
+            threat_description="voiding transactions after the fact",
+            config_source="transactions.voids_enabled=true",
+        ))
+
+    if config.transactions.manual_overrides:
+        traps.append(EnabledTrap(
+            category=TrapCategory.SEMANTIC,
+            name="Manual Price Overrides",
+            threat_description="letting cashiers override prices at the register",
+            config_source="transactions.manual_overrides=true",
+        ))
+
+    # === RELATIONSHIP TRAPS ===
+    if config.stores.cross_store_returns:
+        traps.append(EnabledTrap(
+            category=TrapCategory.RELATIONSHIP,
+            name="Cross-Store Returns",
+            threat_description="allowing items bought at one store to be returned at another",
+            config_source="stores.cross_store_returns=true",
+        ))
+
+    if config.stores.store_lifecycle_changes:
+        traps.append(EnabledTrap(
+            category=TrapCategory.RELATIONSHIP,
+            name="Store Lifecycle Changes",
+            threat_description="opening, closing, and merging stores over time",
+            config_source="stores.store_lifecycle_changes=true",
+        ))
+
+    if config.customers.household_grouping:
+        traps.append(EnabledTrap(
+            category=TrapCategory.RELATIONSHIP,
+            name="Household Grouping",
+            threat_description="grouping customers into households that can change",
+            config_source="customers.household_grouping=true",
+        ))
+
+    if config.products.bundled_products:
+        traps.append(EnabledTrap(
+            category=TrapCategory.RELATIONSHIP,
+            name="Bundled Products",
+            threat_description="selling products as bundles with complex component tracking",
+            config_source="products.bundled_products=true",
+        ))
+
+    return traps

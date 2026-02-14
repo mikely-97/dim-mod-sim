@@ -1,0 +1,46 @@
+{
+  "seed": 42,
+  "shop_name": "Urban Essentials",
+  "transactions": {
+    "grain": "line_item_level",
+    "multiple_payments": false,
+    "voids_enabled": false,
+    "manual_overrides": false
+  },
+  "time": {
+    "timestamp_business_date_relation": "same",
+    "late_arriving_events": false,
+    "backdated_corrections": false
+  },
+  "products": {
+    "sku_reuse": false,
+    "hierarchy_change_frequency": "none",
+    "bundled_products": true,
+    "virtual_products": true
+  },
+  "customers": {
+    "anonymous_allowed": false,
+    "customer_id_reliability": "reliable",
+    "household_grouping": false
+  },
+  "stores": {
+    "physical_stores": true,
+    "online_channel": false,
+    "cross_store_returns": false,
+    "store_lifecycle_changes": false
+  },
+  "promotions": {
+    "promotions_per_line_item": "one",
+    "stackable_promotions": false,
+    "basket_level_promotions": true,
+    "post_transaction_promotions": true
+  },
+  "returns": {
+    "reference_policy": "always",
+    "pricing_policy": "current_price"
+  },
+  "inventory": {
+    "tracked": false,
+    "inventory_type": null
+  }
+}

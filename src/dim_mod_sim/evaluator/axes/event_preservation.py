@@ -2,6 +2,7 @@
 
 from dim_mod_sim.events.models import EventType
 from dim_mod_sim.evaluator.axes.base import EvaluationAxis
+from dim_mod_sim.evaluator.feedback import ViolationType
 from dim_mod_sim.evaluator.result import AxisScore, Deduction, Severity
 from dim_mod_sim.schema.models import SchemaSubmission
 from dim_mod_sim.shop.options import TransactionGrain
@@ -69,6 +70,10 @@ class EventPreservationAxis(EvaluationAxis):
                     reason=f"No fact table appears to support {event_type.value} events",
                     severity=Severity.CRITICAL,
                     affected_elements=[event_type.value],
+                    violation_type=ViolationType.DATA_LOSS,
+                    concrete_example=f"{event_type.value} events from the shop cannot be stored anywhere",
+                    consequence=f"All {event_type.value} data is lost; related business questions cannot be answered",
+                    fix_hint=f"Add a fact table to capture {event_type.value} events",
                 ))
 
         return deductions
@@ -144,6 +149,10 @@ class EventPreservationAxis(EvaluationAxis):
                     reason="Shop uses line-item grain but no line-item level fact table found",
                     severity=Severity.CRITICAL,
                     affected_elements=["grain"],
+                    violation_type=ViolationType.DATA_LOSS,
+                    concrete_example="Transaction with 5 line items becomes 1 row; individual item data is lost",
+                    consequence="Cannot analyze product-level sales, basket composition, or item-level returns",
+                    fix_hint="Add a line-item grain fact table with line_number in the grain",
                 ))
 
         elif grain == TransactionGrain.MIXED:

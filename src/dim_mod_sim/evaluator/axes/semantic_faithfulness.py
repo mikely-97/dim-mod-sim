@@ -1,6 +1,7 @@
 """Semantic faithfulness evaluation axis."""
 
 from dim_mod_sim.evaluator.axes.base import EvaluationAxis
+from dim_mod_sim.evaluator.feedback import ViolationType
 from dim_mod_sim.evaluator.result import AxisScore, Deduction, Severity
 from dim_mod_sim.schema.models import SchemaSubmission
 from dim_mod_sim.shop.options import (
@@ -57,6 +58,10 @@ class SemanticFaithfulnessAxis(EvaluationAxis):
                     reason="Multiple payments are supported but no payment-specific modeling found",
                     severity=Severity.MAJOR,
                     affected_elements=["payment"],
+                    violation_type=ViolationType.SEMANTIC_MISMATCH,
+                    concrete_example="Transaction paid $50 cash + $75 credit card, but model only stores one payment",
+                    consequence="Cannot analyze payment method mix, reconcile transactions, or track tender types",
+                    fix_hint="Add a payment fact table or payment bridge table for many-to-one payments",
                 ))
 
         # Voids
@@ -188,6 +193,10 @@ class SemanticFaithfulnessAxis(EvaluationAxis):
                     reason="Returns are supported but no return fact table found",
                     severity=Severity.MAJOR,
                     affected_elements=["returns"],
+                    violation_type=ViolationType.UNDER_MODELING,
+                    concrete_example="Customer returns item for $50 refund - nowhere to record this event",
+                    consequence="Return rates, refund amounts, and customer satisfaction metrics unavailable",
+                    fix_hint="Add a returns fact table to capture return events and reasons",
                 ))
 
             # Check for original transaction reference

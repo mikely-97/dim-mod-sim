@@ -1,0 +1,279 @@
+{
+  "fact_tables": [
+    {
+      "name": "fact_sales",
+      "grain_description": "TODO: One row per line item sold",
+      "grain_columns": [
+        {
+          "name": "transaction_id",
+          "is_degenerate": true
+        },
+        {
+          "name": "line_number",
+          "is_degenerate": true,
+          "_todo": null
+        }
+      ],
+      "measures": [
+        {
+          "name": "quantity",
+          "data_type": "int",
+          "aggregation": "sum"
+        },
+        {
+          "name": "gross_amount_cents",
+          "data_type": "int",
+          "aggregation": "sum"
+        },
+        {
+          "name": "discount_cents",
+          "data_type": "int",
+          "aggregation": "sum"
+        },
+        {
+          "name": "net_amount_cents",
+          "data_type": "int",
+          "aggregation": "sum"
+        }
+      ],
+      "dimension_keys": [
+        "date_key",
+        "product_key",
+        "store_key",
+        "customer_key"
+      ]
+    },
+    {
+      "name": "fact_returns",
+      "grain_description": "TODO: One row per return line item",
+      "grain_columns": [
+        {
+          "name": "return_id",
+          "is_degenerate": true
+        },
+        {
+          "name": "line_number",
+          "is_degenerate": true
+        },
+        {
+          "name": "original_transaction_id",
+          "references_dimension": null,
+          "is_degenerate": true
+        }
+      ],
+      "measures": [
+        {
+          "name": "quantity_returned",
+          "data_type": "int",
+          "aggregation": "sum"
+        },
+        {
+          "name": "refund_amount_cents",
+          "data_type": "int",
+          "aggregation": "sum"
+        }
+      ],
+      "dimension_keys": [
+        "date_key",
+        "product_key",
+        "store_key",
+        "customer_key"
+      ],
+      "_todo_original_ref": "Always has original transaction - consider FK to fact_sales"
+    }
+  ],
+  "dimension_tables": [
+    {
+      "name": "dim_date",
+      "natural_key": [
+        "date_value"
+      ],
+      "surrogate_key": "date_key",
+      "scd_strategy": "type_0",
+      "attributes": [
+        {
+          "name": "date_value",
+          "data_type": "date"
+        },
+        {
+          "name": "year",
+          "data_type": "int"
+        },
+        {
+          "name": "quarter",
+          "data_type": "int"
+        },
+        {
+          "name": "month",
+          "data_type": "int"
+        },
+        {
+          "name": "month_name",
+          "data_type": "varchar"
+        },
+        {
+          "name": "day_of_week",
+          "data_type": "int"
+        },
+        {
+          "name": "day_name",
+          "data_type": "varchar"
+        },
+        {
+          "name": "is_weekend",
+          "data_type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "dim_product",
+      "natural_key": [
+        "sku"
+      ],
+      "surrogate_key": "product_key",
+      "scd_strategy": "type_1",
+      "attributes": [
+        {
+          "name": "sku",
+          "data_type": "varchar"
+        },
+        {
+          "name": "product_name",
+          "data_type": "varchar"
+        },
+        {
+          "name": "category",
+          "data_type": "varchar",
+          "scd_tracked": false
+        },
+        {
+          "name": "subcategory",
+          "data_type": "varchar",
+          "scd_tracked": false
+        },
+        {
+          "name": "brand",
+          "data_type": "varchar"
+        },
+        {
+          "name": "unit_price_cents",
+          "data_type": "int"
+        }
+      ]
+    },
+    {
+      "name": "dim_store",
+      "natural_key": [
+        "store_id"
+      ],
+      "surrogate_key": "store_key",
+      "scd_strategy": "type_1",
+      "attributes": [
+        {
+          "name": "store_id",
+          "data_type": "varchar"
+        },
+        {
+          "name": "store_name",
+          "data_type": "varchar"
+        },
+        {
+          "name": "channel",
+          "data_type": "varchar"
+        },
+        {
+          "name": "address",
+          "data_type": "varchar"
+        },
+        {
+          "name": "city",
+          "data_type": "varchar"
+        },
+        {
+          "name": "state",
+          "data_type": "varchar"
+        }
+      ]
+    },
+    {
+      "name": "dim_customer",
+      "natural_key": [
+        "customer_id"
+      ],
+      "surrogate_key": "customer_key",
+      "scd_strategy": "type_1",
+      "attributes": [
+        {
+          "name": "customer_id",
+          "data_type": "varchar"
+        },
+        {
+          "name": "customer_type",
+          "data_type": "varchar"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "fact_table": "fact_sales",
+      "dimension_table": "dim_date",
+      "fact_column": "date_key",
+      "dimension_column": "date_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_sales",
+      "dimension_table": "dim_product",
+      "fact_column": "product_key",
+      "dimension_column": "product_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_sales",
+      "dimension_table": "dim_store",
+      "fact_column": "store_key",
+      "dimension_column": "store_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_sales",
+      "dimension_table": "dim_customer",
+      "fact_column": "customer_key",
+      "dimension_column": "customer_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_returns",
+      "dimension_table": "dim_date",
+      "fact_column": "date_key",
+      "dimension_column": "date_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_returns",
+      "dimension_table": "dim_product",
+      "fact_column": "product_key",
+      "dimension_column": "product_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_returns",
+      "dimension_table": "dim_store",
+      "fact_column": "store_key",
+      "dimension_column": "store_key",
+      "cardinality": "many-to-one"
+    },
+    {
+      "fact_table": "fact_returns",
+      "dimension_table": "dim_customer",
+      "fact_column": "customer_key",
+      "dimension_column": "customer_key",
+      "cardinality": "many-to-one"
+    }
+  ],
+  "bridge_tables": [],
+  "_scaffold_warnings": [
+    "Post-transaction promotions exist - adjustments after the fact!"
+  ]
+}
