@@ -10,20 +10,28 @@ poetry install
 
 ## Quick Start
 
-The recommended way to use Dim-Mod-Sim is the interactive `play` command:
+The recommended way to use Dim-Mod-Sim is the interactive TUI:
 
 ```bash
-# Start an interactive session with adversarial framing
+# Launch the interactive terminal UI
+poetry run dim-mod-sim ui
+```
+
+This opens a full-screen interface where you can:
+1. Start a new scenario (choose difficulty and seed)
+2. Read the business description and see which traps are active
+3. Edit your schema in a built-in JSON editor
+4. Evaluate with live 6-axis scoring and collapsible feedback
+5. Submit your final schema and export a Markdown report
+6. Track progress across all your attempts
+
+For a quick non-interactive session, use the `play` command instead:
+
+```bash
 poetry run dim-mod-sim play --seed 42 --difficulty medium
 ```
 
-This will:
-1. Generate a shop scenario with "traps" highlighted
-2. Create a schema scaffold with TODOs for you to complete
-3. Let you iterate on your schema with actionable feedback
-4. Track your progress across attempts
-
-Alternatively, use individual commands for more control:
+Or use individual commands for scripting/automation:
 
 ```bash
 # Generate a shop scenario (config, events, description)
@@ -40,6 +48,36 @@ poetry run dim-mod-sim explain output/shop_config.json output/events.json my_sch
 ```
 
 ## Commands
+
+### ui
+
+**Recommended entry point.** Full-screen TUI with integrated editor, live evaluation, and progress tracking.
+
+```bash
+poetry run dim-mod-sim ui [OPTIONS]
+
+Options:
+  --web / --no-web    Serve as web app via textual-web (requires: pip install textual-web)
+  --port INTEGER      Port for web server (default: 8080)
+```
+
+**Screen flow:**
+- **Home** → New Game / Continue last session / Progress dashboard
+- **New Game modal** → Select difficulty + optional seed
+- **Scenario** → Business description + active traps overview
+- **Play** → JSON schema editor + real-time evaluation + feedback tree
+- **Results** → Full score breakdown + Markdown export
+
+**Keyboard shortcuts in Play screen:**
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+E` | Evaluate schema |
+| `Ctrl+S` | Save schema to file |
+| `Ctrl+L` | Load scaffold |
+| `?` | Show help |
+| `Escape` | Go back |
+| `q` | Quit |
 
 ### play
 
@@ -358,7 +396,16 @@ The generator randomly selects from these options:
 
 ## Example Workflow
 
-### Interactive (Recommended)
+### TUI (Recommended)
+
+```bash
+# Launch the interactive UI
+poetry run dim-mod-sim ui
+
+# Navigate: New Game → pick adversarial → read scenario → model → evaluate → submit
+```
+
+### CLI Interactive
 
 ```bash
 # Start an interactive adversarial session
@@ -371,7 +418,7 @@ poetry run dim-mod-sim play --seed 123 --difficulty adversarial
 # 4. Track your progress
 ```
 
-### Manual
+### Manual / Scripting
 
 ```bash
 # 1. Generate an adversarial scenario
